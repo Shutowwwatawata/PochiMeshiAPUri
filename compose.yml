@@ -1,0 +1,38 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+    networks:
+      - pochi-network
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    networks:
+      - pochi-network
+    depends_on:
+      - camera
+
+  camera:
+    build: ./camera_module
+    volumes:
+      - ./camera_module:/app
+      - /dev/video0:/dev/video0 # カメラデバイス（Linux想定）
+    devices:
+      - "/dev/video0:/dev/video0"
+    networks:
+      - pochi-network
+
+networks:
+  pochi-network:
+    driver: bridge
